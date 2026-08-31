@@ -1,0 +1,43 @@
+# Private strategy and notes
+/PRIVATE.md
+/ARCHITECTURE_NOTES.md
+/STRATEGY.md
+/TODO_PERSONAL.md
+
+# Build artifacts
+/target/
+/build/
+/.gradle/
+*.class
+*.jar
+*.war
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+*.properties.local
+
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+postgres_data/
+
+# Learning & task tracking (private, local only)
+/learn.md
+/tasks/

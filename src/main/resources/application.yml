@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: ledgerflow
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ledgerflow
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    com.ledgerflow: DEBUG
+    org.springframework.web: WARN
