@@ -27,6 +27,16 @@ public class StripeService {
             .setCurrency(currency.toLowerCase()) // stripe wants "usd" not "USD"
             .setPaymentMethod("pm_card_visa") // test card that always succeeds
             .setConfirm(true)  // charge it now, don't just create it
+            // your stripe dashboard has redirect based methods enabled (klarna, ideal etc).
+            // those need a return_url to send the customer back to. we have no browser here,
+            // so tell stripe never to pick one.
+            .setAutomaticPaymentMethods(
+                PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
+                    .setEnabled(true)
+                    .setAllowRedirects(
+                        PaymentIntentCreateParams.AutomaticPaymentMethods.AllowRedirects.NEVER)
+                    .build()
+            )
             .build();
 
         RequestOptions options = RequestOptions.builder()
