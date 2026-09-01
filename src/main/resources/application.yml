@@ -25,6 +25,11 @@ spring:
 server:
   port: 8080
 
+stripe:
+  # read from the STRIPE_API_KEY env var so a real key never gets committed.
+  # falls back to a placeholder so the app still starts without one.
+  api-key: ${STRIPE_API_KEY:sk_test_placeholder}
+
 logging:
   level:
     root: INFO
