@@ -23,6 +23,10 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <stripe.version>25.0.0</stripe.version>
+        <testcontainers.version>1.21.3</testcontainers.version>
+        <!-- spring boot 3.2 pins a byte buddy that predates jdk 26. mockito needs it
+             to generate mocks, so it has to be new enough to read our class files. -->
+        <byte-buddy.version>1.17.5</byte-buddy.version>
     </properties>
 
     <dependencies>
@@ -69,14 +73,23 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.19.3</version>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <version>1.19.3</version>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- hooks container startup/shutdown into the junit 5 lifecycle
+             (@Testcontainers / @Container) -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -86,6 +99,15 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- lets byte buddy instrument a jdk newer than it officially knows -->
+                    <argLine>-Dnet.bytebuddy.experimental=true</argLine>
+                </configuration>
             </plugin>
         </plugins>
     </build>
