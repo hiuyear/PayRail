@@ -13,6 +13,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      # zz- so it runs after schema.sql. creates ledgerflow_test for the test suite.
+      - ./docker/init-test-db.sh:/docker-entrypoint-initdb.d/zz-init-test-db.sh
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
