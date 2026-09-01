@@ -3,6 +3,14 @@ package com.ledgerflow.domain;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+// what this file does: defines the class Payment, whcih includes:
+// 1. each @column field: an attribute of each payment object, "i expect a column in the database"
+// 2. constructors and getters (basic java stuff)
+// 3. class methods to retrieve specific attributes of each payment instance
+// note: nullable = false means it must be provided, unique means each value in the column must be unique, uddatable = false means it must be fixed)
+// this creates maps to the payments table in PostgreSQL; this is the java representation of the table
+// schema.sql already created the database table. Spring uses the @Column annotations to know how to convert Java objects ↔ SQL rows. It verifies the Java class matches the database table
+
 @Entity
 @Table(name = "payments")
 public class Payment {
