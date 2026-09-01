@@ -23,10 +23,10 @@ public class StripeService {
 
     public String createPaymentIntent(long amountCents, String currency, String idempotencyKey) {
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-            .setAmount(amountCents)
-            .setCurrency(currency.toLowerCase())
-            .setPaymentMethod("pm_card_visa")
-            .setConfirm(true)
+            .setAmount(amountCents) // 5000 = $50.00, always in cents
+            .setCurrency(currency.toLowerCase()) // stripe wants "usd" not "USD"
+            .setPaymentMethod("pm_card_visa") // test card that always succeeds
+            .setConfirm(true)  // charge it now, don't just create it
             .build();
 
         RequestOptions options = RequestOptions.builder()
@@ -35,6 +35,10 @@ public class StripeService {
 
         try {
             PaymentIntent intent = stripeClient.paymentIntents().create(params, options);
+            // paymentIntent = stripe's object for one attempt to collect money. stripe's, not ours.
+            // paymentIntents() is the grouping of payment intent operations, .create() is the call.
+            // takes two args: params (what to charge) and options (how to send it).
+
             log.info("stripe charged: id={} status={}", intent.getId(), intent.getStatus());
             return intent.getId();
         } catch (StripeException e) {
@@ -44,14 +48,13 @@ public class StripeService {
     }
 }
 
-// the only file that knows stripe exists. everything else calls this, so swapping or
-// faking the processor is a one file change.
+// this file, one job: take an amount, charge a card, hand back an id
+// what a PaymentIntent is: Stripe's object for one attempt to collect money
+// Not "a charge" exactly, but it's the whole lifecycle: created → confirmed → succeeded (or failed, or needs the customer to do 3D Secure).
+// the only file that knows stripe exists. everything else calls this
 //
 // same client object pattern as openai: build the client once with your key, then call
-// methods on it. built once at startup, not per request, since it holds a connection pool.
-//
-// the api key comes from the STRIPE_API_KEY env var (see application.yml) so a real key
-// never gets committed.
+// methods on it. built once at startup, not per request
 //
 // pm_card_visa is stripe's test card token that always succeeds, so the demo runs without
 // a real card. a real integration would take a payment method id from the frontend.
@@ -60,4 +63,4 @@ public class StripeService {
 // us calling stripe twice, and this stops stripe counting it twice if our retry does get through.
 //
 // stripe throws a checked StripeException. we catch it and rethrow our own unchecked one so
-// callers don't need to import stripe types.
+// callers don't need to import stripe types. (a CHECKED exception, hence forcing every method up the call chain to write throws StripeException)
