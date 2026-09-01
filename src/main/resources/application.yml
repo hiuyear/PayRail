@@ -17,13 +17,18 @@ spring:
         format_sql: true
     show-sql: false
 
-  sql:
-    init:
-      mode: always
-      data-locations: classpath:data.sql
+# note: there is deliberately no spring.sql.init block here.
+# the schema is owned by schema.sql, which docker-compose feeds to postgres via
+# docker-entrypoint-initdb.d when the db volume is first created. letting spring run
+# it too would execute the file twice against the same database.
 
 server:
   port: 8080
+
+stripe:
+  # read from the STRIPE_API_KEY env var so a real key never gets committed.
+  # falls back to a placeholder so the app still starts without one.
+  api-key: ${STRIPE_API_KEY:sk_test_placeholder}
 
 logging:
   level:

@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS accounts (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_accounts_external_id ON accounts(external_id);
-CREATE INDEX idx_accounts_type ON accounts(account_type);
+CREATE INDEX IF NOT EXISTS idx_accounts_external_id ON accounts(external_id);
+CREATE INDEX IF NOT EXISTS idx_accounts_type ON accounts(account_type);
 
 -- Payments table: top-level payment records
 CREATE TABLE IF NOT EXISTS payments (
@@ -28,10 +28,10 @@ CREATE TABLE IF NOT EXISTS payments (
     processed_at TIMESTAMP
 );
 
-CREATE INDEX idx_payments_payment_id ON payments(payment_id);
-CREATE INDEX idx_payments_stripe_id ON payments(stripe_payment_intent_id);
-CREATE INDEX idx_payments_idempotency ON payments(idempotency_key);
-CREATE INDEX idx_payments_status ON payments(status);
+CREATE INDEX IF NOT EXISTS idx_payments_payment_id ON payments(payment_id);
+CREATE INDEX IF NOT EXISTS idx_payments_stripe_id ON payments(stripe_payment_intent_id);
+CREATE INDEX IF NOT EXISTS idx_payments_idempotency ON payments(idempotency_key);
+CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
 
 -- Ledger entries: double-entry bookkeeping
 CREATE TABLE IF NOT EXISTS ledger_entries (
@@ -43,8 +43,8 @@ CREATE TABLE IF NOT EXISTS ledger_entries (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_ledger_payment ON ledger_entries(payment_id);
-CREATE INDEX idx_ledger_account ON ledger_entries(account_id);
+CREATE INDEX IF NOT EXISTS idx_ledger_payment ON ledger_entries(payment_id);
+CREATE INDEX IF NOT EXISTS idx_ledger_account ON ledger_entries(account_id);
 
 -- Webhook events: for idempotent webhook processing
 CREATE TABLE IF NOT EXISTS webhook_events (
@@ -58,10 +58,12 @@ CREATE TABLE IF NOT EXISTS webhook_events (
     processed_at TIMESTAMP
 );
 
-CREATE INDEX idx_webhook_event_id ON webhook_events(event_id);
-CREATE INDEX idx_webhook_processed ON webhook_events(processed);
+CREATE INDEX IF NOT EXISTS idx_webhook_event_id ON webhook_events(event_id);
+CREATE INDEX IF NOT EXISTS idx_webhook_processed ON webhook_events(processed);
 
--- Seed initial platform account (for ledger balance checks)
-INSERT INTO accounts (external_id, account_type, name)
-VALUES ('platform-001', 'PLATFORM', 'Platform Account')
+-- seed accounts so the api is usable straight after `docker compose up`
+INSERT INTO accounts (external_id, account_type, name) VALUES
+    ('platform-001', 'PLATFORM', 'Platform Account'),
+    ('cust_001',     'CUSTOMER', 'Demo Customer'),
+    ('merch_001',    'MERCHANT', 'Demo Merchant')
 ON CONFLICT (external_id) DO NOTHING;
