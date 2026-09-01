@@ -4,7 +4,7 @@ import com.ledgerflow.domain.Payment;
 import com.ledgerflow.dto.PaymentRequest;
 import com.ledgerflow.dto.PaymentResponse;
 import com.ledgerflow.service.PaymentService;
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,7 +42,9 @@ public class PaymentController {
      */
     @PostMapping
     public ResponseEntity<PaymentResponse> createPayment(
-        @RequestBody PaymentRequest request,
+        // @Valid is the on-switch. without it the annotations on PaymentRequest never run
+        // and -5000 goes straight through to stripe and the ledger.
+        @Valid @RequestBody PaymentRequest request,
         @RequestHeader("Idempotency-Key") String idempotencyKey
     ) {
         // STEP 1: call the service to process the payment (all business logic happens here)
