@@ -17,10 +17,10 @@ spring:
         format_sql: true
     show-sql: false
 
-  sql:
-    init:
-      mode: always
-      data-locations: classpath:data.sql
+# note: there is deliberately no spring.sql.init block here.
+# the schema is owned by schema.sql, which docker-compose feeds to postgres via
+# docker-entrypoint-initdb.d when the db volume is first created. letting spring run
+# it too would execute the file twice against the same database.
 
 server:
   port: 8080
