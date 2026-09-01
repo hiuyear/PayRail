@@ -61,7 +61,9 @@ CREATE TABLE IF NOT EXISTS webhook_events (
 CREATE INDEX IF NOT EXISTS idx_webhook_event_id ON webhook_events(event_id);
 CREATE INDEX IF NOT EXISTS idx_webhook_processed ON webhook_events(processed);
 
--- Seed initial platform account (for ledger balance checks)
-INSERT INTO accounts (external_id, account_type, name)
-VALUES ('platform-001', 'PLATFORM', 'Platform Account')
+-- seed accounts so the api is usable straight after `docker compose up`
+INSERT INTO accounts (external_id, account_type, name) VALUES
+    ('platform-001', 'PLATFORM', 'Platform Account'),
+    ('cust_001',     'CUSTOMER', 'Demo Customer'),
+    ('merch_001',    'MERCHANT', 'Demo Merchant')
 ON CONFLICT (external_id) DO NOTHING;
