@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: payrail-test
+
+  # separate database from the dev one, so `mvn test` wiping tables between cases
+  # never touches whatever you were looking at in the running app.
+  # created by docker/init-test-db.sh when the postgres volume is first built.
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ledgerflow_test
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+stripe:
+  # StripeService is @MockBean'd in the tests, so this is never used to talk to stripe.
+  # it only has to be present so the bean can be constructed.
+  api-key: sk_test_dummy_for_tests
+
+logging:
+  level:
+    root: WARN
+    com.ledgerflow: INFO
